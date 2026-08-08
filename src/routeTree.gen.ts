@@ -15,6 +15,7 @@ import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as LessonsRouteImport } from './routes/lessons'
 import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as UsersRouteImport } from './routes/users'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses.$courseId'
@@ -49,6 +50,11 @@ const NotificationsRoute = NotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UsersRoute = UsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/courses': typeof CoursesRouteWithChildren
   '/lessons': typeof LessonsRoute
   '/notifications': typeof NotificationsRoute
+  '/settings': typeof SettingsRoute
   '/users': typeof UsersRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/courses/': typeof CoursesIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/analytics': typeof AnalyticsRoute
   '/lessons': typeof LessonsRoute
   '/notifications': typeof NotificationsRoute
+  '/settings': typeof SettingsRoute
   '/users': typeof UsersRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/courses': typeof CoursesIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/courses': typeof CoursesRouteWithChildren
   '/lessons': typeof LessonsRoute
   '/notifications': typeof NotificationsRoute
+  '/settings': typeof SettingsRoute
   '/users': typeof UsersRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/courses/': typeof CoursesIndexRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/courses'
     | '/lessons'
     | '/notifications'
+    | '/settings'
     | '/users'
     | '/courses/$courseId'
     | '/courses/'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/lessons'
     | '/notifications'
+    | '/settings'
     | '/users'
     | '/courses/$courseId'
     | '/courses'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/courses'
     | '/lessons'
     | '/notifications'
+    | '/settings'
     | '/users'
     | '/courses/$courseId'
     | '/courses/'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   CoursesRoute: typeof CoursesRouteWithChildren
   LessonsRoute: typeof LessonsRoute
   NotificationsRoute: typeof NotificationsRoute
+  SettingsRoute: typeof SettingsRoute
   UsersRoute: typeof UsersRoute
 }
 
@@ -187,6 +200,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/users': {
       id: '/users'
       path: '/users'
@@ -231,6 +251,7 @@ const rootRouteChildren: RootRouteChildren = {
   CoursesRoute: CoursesRouteWithChildren,
   LessonsRoute: LessonsRoute,
   NotificationsRoute: NotificationsRoute,
+  SettingsRoute: SettingsRoute,
   UsersRoute: UsersRoute,
 }
 export const routeTree = rootRouteImport
