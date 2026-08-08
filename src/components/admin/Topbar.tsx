@@ -1,7 +1,13 @@
 import { Search, Bell, Command } from "lucide-react";
 import { motion } from "motion/react";
 
-export function Topbar({ title, subtitle }: { title: string; subtitle?: string }) {
+export function Topbar({
+  title,
+  subtitle,
+}: {
+  title: string;
+  subtitle?: string | undefined;
+}) {
   return (
     <motion.header
       initial={{ opacity: 0, y: -10 }}
