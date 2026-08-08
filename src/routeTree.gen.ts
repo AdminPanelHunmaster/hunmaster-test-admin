@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccessRouteImport } from './routes/access'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as LessonsRouteImport } from './routes/lessons'
 import { Route as UsersRouteImport } from './routes/users'
@@ -25,6 +26,11 @@ const IndexRoute = IndexRouteImport.update({
 const AccessRoute = AccessRouteImport.update({
   id: '/access',
   path: '/access',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoursesRoute = CoursesRouteImport.update({
@@ -56,6 +62,7 @@ const CoursesCourseIdRoute = CoursesCourseIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/access': typeof AccessRoute
+  '/analytics': typeof AnalyticsRoute
   '/courses': typeof CoursesRouteWithChildren
   '/lessons': typeof LessonsRoute
   '/users': typeof UsersRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/access': typeof AccessRoute
+  '/analytics': typeof AnalyticsRoute
   '/lessons': typeof LessonsRoute
   '/users': typeof UsersRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
@@ -74,6 +82,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/access': typeof AccessRoute
+  '/analytics': typeof AnalyticsRoute
   '/courses': typeof CoursesRouteWithChildren
   '/lessons': typeof LessonsRoute
   '/users': typeof UsersRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/access'
+    | '/analytics'
     | '/courses'
     | '/lessons'
     | '/users'
@@ -92,11 +102,18 @@ export interface FileRouteTypes {
     | '/courses/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/access' | '/lessons' | '/users' | '/courses/$courseId' | '/courses'
+    | '/'
+    | '/access'
+    | '/analytics'
+    | '/lessons'
+    | '/users'
+    | '/courses/$courseId'
+    | '/courses'
   id:
     | '__root__'
     | '/'
     | '/access'
+    | '/analytics'
     | '/courses'
     | '/lessons'
     | '/users'
@@ -107,6 +124,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccessRoute: typeof AccessRoute
+  AnalyticsRoute: typeof AnalyticsRoute
   CoursesRoute: typeof CoursesRouteWithChildren
   LessonsRoute: typeof LessonsRoute
   UsersRoute: typeof UsersRoute
@@ -126,6 +144,13 @@ declare module '@tanstack/react-router' {
       path: '/access'
       fullPath: '/access'
       preLoaderRoute: typeof AccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/courses': {
@@ -182,6 +207,7 @@ const CoursesRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccessRoute: AccessRoute,
+  AnalyticsRoute: AnalyticsRoute,
   CoursesRoute: CoursesRouteWithChildren,
   LessonsRoute: LessonsRoute,
   UsersRoute: UsersRoute,
