@@ -9,7 +9,7 @@ export function AdminLayout({
   children,
 }: {
   title: string;
-  subtitle?: string;
+  subtitle?: string | undefined;
   children: ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(false);
