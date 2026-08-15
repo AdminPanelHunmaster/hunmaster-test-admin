@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { UsersTable } from "@/components/admin/UsersTable";
 import { UserDrawer } from "@/components/admin/UserDrawer";
-import { mockUsers, type AdminUser, type UserStatus } from "@/lib/data";
+import { users as seedUsers, type AdminUser, type UserStatus } from "@/lib/data";
 
 export const Route = createFileRoute("/users")({
   head: () => ({
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/users")({
 });
 
 function UsersPage() {
-  const [users, setUsers] = useState<AdminUser[]>(mockUsers);
+  const [users, setUsers] = useState<AdminUser[]>(seedUsers);
   const [selected, setSelected] = useState<AdminUser | null>(null);
 
   const handleStatus = (id: string, status: UserStatus) => {
@@ -35,7 +35,11 @@ function UsersPage() {
   return (
     <AdminLayout
       title="Пользователи"
-      subtitle={`${users.length} учеников в базе — демонстрационные данные`}
+      subtitle={
+        users.length === 0
+          ? "Пользователей пока нет"
+          : `${users.length} учеников в базе`
+      }
     >
       <UsersTable users={users} onSelect={setSelected} />
       <UserDrawer
