@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { KeyRound, Check, Repeat, PowerOff } from "lucide-react";
+import { KeyRound, Check, Repeat, PowerOff, Inbox } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { GlassCard } from "@/components/admin/GlassCard";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { ConfirmModal } from "@/components/admin/ConfirmModal";
 import { SegmentedControl } from "@/components/admin/ChartCard";
+import { EmptyState } from "@/components/admin/EmptyState";
 import { courses, users as seedUsers, type AdminUser, type UserStatus } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -39,17 +40,27 @@ const buckets: { value: Bucket; label: string }[] = [
 
 const durations = ["30 дней", "90 дней", "180 дней", "365 дней", "Бессрочно"];
 
+function daysLeft(u: AdminUser) {
+  if (!u.accessUntil) return null;
+  const [d, m, y] = u.accessUntil.split(".").map(Number);
+  if (!d || !m || !y) return null;
+  return Math.ceil((new Date(y, m - 1, d).getTime() - Date.now()) / 86_400_000);
+}
+
 function inBucket(u: AdminUser, b: Bucket) {
   if (b === "pending") return u.status === "pending";
   if (b === "expired") return u.status === "expired" || u.status === "blocked";
-  if (b === "soon") return u.status === "active" && ["u-01", "u-09", "u-11", "u-15"].includes(u.id);
+  if (b === "soon") {
+    const left = daysLeft(u);
+    return u.status === "active" && left !== null && left >= 0 && left <= 14;
+  }
   return u.status === "active";
 }
 
 function AccessPage() {
-  const [users, setUsers] = useState(users as seedUsers);
+  const [users, setUsers] = useState<AdminUser[]>(seedUsers);
   const [bucket, setBucket] = useState<Bucket>("pending");
-  const [selectedId, setSelectedId] = useState<string | null>("u-04");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [course, setCourse] = useState(courses[0]!.title);
   const [duration, setDuration] = useState(durations[1]!);
   const [confirm, setConfirm] = useState<{ label: string; status: UserStatus } | null>(null);
@@ -111,7 +122,11 @@ function AccessPage() {
               </motion.button>
             ))}
             {list.length === 0 && (
-              <p className="py-10 text-center text-sm text-muted-foreground">Список пуст</p>
+              <EmptyState
+                icon={Inbox}
+                title="Нет активных подписок"
+                description="Доступы появятся здесь, как только зарегистрируются реальные пользователи."
+              />
             )}
           </div>
         </GlassCard>
@@ -204,7 +219,7 @@ function AccessPage() {
       <ConfirmModal
         open={!!confirm}
         title={confirm?.label ?? ""}
-        description={`${confirm?.label ?? ""} для ${selected?.name ?? ""}: ${course}, ${duration}. Демонстрационный режим.`}
+        description={`${confirm?.label ?? ""} для ${selected?.name ?? ""}: ${course}, ${duration}.`}
         confirmLabel={confirm?.label ?? "Подтвердить"}
         destructive={confirm?.status === "expired"}
         onCancel={() => setConfirm(null)}
