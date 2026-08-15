@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { motion } from "motion/react";
-import { Search, ArrowUpDown, ChevronRight } from "lucide-react";
+import { Search, ArrowUpDown, ChevronRight, Users as UsersIcon } from "lucide-react";
 import type { AdminUser, UserStatus } from "@/lib/data";
 import { StatusBadge } from "./StatusBadge";
 import { GlassCard } from "./GlassCard";
+import { EmptyState } from "./EmptyState";
 import { cn } from "@/lib/utils";
 
 const filters: { value: UserStatus | "all"; label: string }[] = [
@@ -153,7 +154,7 @@ export function UsersTable({
                   <StatusBadge status={u.status} />
                 </td>
                 <td className="border-y border-border/60 bg-foreground/[0.03] px-3 py-3 text-sm text-muted-foreground transition-colors group-hover:bg-ember/[0.07]">
-                  {u.registeredAt}
+                  {u.registeredAt || "—"}
                 </td>
                 <td className="border-y border-border/60 bg-foreground/[0.03] px-3 py-3 text-sm text-muted-foreground transition-colors group-hover:bg-ember/[0.07]">
                   {u.accessUntil ?? "—"}
@@ -166,9 +167,16 @@ export function UsersTable({
           </tbody>
         </table>
         {rows.length === 0 && (
-          <p className="py-10 text-center text-sm text-muted-foreground">
-            Пользователи не найдены
-          </p>
+          <EmptyState
+            className="mt-2"
+            icon={UsersIcon}
+            title={users.length === 0 ? "Пользователей пока нет" : "Пользователи не найдены"}
+            description={
+              users.length === 0
+                ? "Зарегистрированные пользователи появятся здесь автоматически."
+                : "Измените поисковый запрос или фильтр."
+            }
+          />
         )}
       </div>
     </GlassCard>
