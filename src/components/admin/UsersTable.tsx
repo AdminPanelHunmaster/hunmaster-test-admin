@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { Search, ArrowUpDown, ChevronRight } from "lucide-react";
-import type { AdminUser, UserStatus } from "@/lib/mock-data";
+import type { AdminUser, UserStatus } from "@/lib/data";
 import { StatusBadge } from "./StatusBadge";
 import { GlassCard } from "./GlassCard";
 import { cn } from "@/lib/utils";

@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { UsersTable } from "@/components/admin/UsersTable";
 import { UserDrawer } from "@/components/admin/UserDrawer";
-import { mockUsers, type AdminUser, type UserStatus } from "@/lib/mock-data";
+import { mockUsers, type AdminUser, type UserStatus } from "@/lib/data";
 
 export const Route = createFileRoute("/users")({
   head: () => ({

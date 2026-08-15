@@ -7,7 +7,7 @@ import { GlassCard } from "@/components/admin/GlassCard";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { ConfirmModal } from "@/components/admin/ConfirmModal";
 import { SegmentedControl } from "@/components/admin/ChartCard";
-import { courses, mockUsers, type AdminUser, type UserStatus } from "@/lib/mock-data";
+import { courses, mockUsers, type AdminUser, type UserStatus } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/access")({
