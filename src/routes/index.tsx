@@ -29,7 +29,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { StatCard } from "@/components/admin/StatCard";
 import { ChartCard, SegmentedControl } from "@/components/admin/ChartCard";
 import { GlassCard } from "@/components/admin/GlassCard";
-import { activeStudentsSeries, activityFeed, newUsersSeries } from "@/lib/mock-data";
+import { activeStudentsSeries, activityFeed, newUsersSeries } from "@/lib/data";
 import { chartTooltipStyle } from "@/lib/chart-theme";
 
 export const Route = createFileRoute("/")({

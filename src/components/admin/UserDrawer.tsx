@@ -14,7 +14,7 @@ import {
   Ban,
   Trash2,
 } from "lucide-react";
-import type { AdminUser, UserStatus } from "@/lib/mock-data";
+import type { AdminUser, UserStatus } from "@/lib/data";
 import { StatusBadge } from "./StatusBadge";
 import { ConfirmModal } from "./ConfirmModal";
 

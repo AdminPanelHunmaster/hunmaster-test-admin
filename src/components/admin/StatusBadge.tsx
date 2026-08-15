@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import type { UserStatus } from "@/lib/mock-data";
-import { statusLabels } from "@/lib/mock-data";
+import type { UserStatus } from "@/lib/data";
+import { statusLabels } from "@/lib/data";
 
 const styles: Record<UserStatus, string> = {
   active: "text-jade border-jade/35 bg-jade/10",

@@ -17,7 +17,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { StatCard } from "@/components/admin/StatCard";
 import { ChartCard } from "@/components/admin/ChartCard";
 import { GlassCard } from "@/components/admin/GlassCard";
-import { popularLessons, retentionSeries, weekdayActivity } from "@/lib/mock-data";
+import { popularLessons, retentionSeries, weekdayActivity } from "@/lib/data";
 import { chartTooltipStyle } from "@/lib/chart-theme";
 
 export const Route = createFileRoute("/analytics")({

@@ -5,7 +5,7 @@ import { GripVertical, Plus, Pencil, Trash2, ArrowLeft, Circle, CheckCircle2 } f
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { GlassCard } from "@/components/admin/GlassCard";
 import { ConfirmModal } from "@/components/admin/ConfirmModal";
-import { courseModules, courses } from "@/lib/mock-data";
+import { courseModules, courses } from "@/lib/data";
 
 export const Route = createFileRoute("/courses/$courseId")({
   head: () => ({

@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { motion } from "motion/react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { CourseCard } from "@/components/admin/CourseCard";
-import { courses as mockCourses } from "@/lib/mock-data";
+import { courses as mockCourses } from "@/lib/data";
 
 export const Route = createFileRoute("/courses/")({
   head: () => ({

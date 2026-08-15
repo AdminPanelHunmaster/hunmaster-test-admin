@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { UserPlus, AlertTriangle, CheckCircle2, KeyRound, CheckCheck } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { GlassCard } from "@/components/admin/GlassCard";
-import { notifications as mockNotifications } from "@/lib/mock-data";
+import { notifications as mockNotifications } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/notifications")({
