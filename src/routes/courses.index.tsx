@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { motion } from "motion/react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { CourseCard } from "@/components/admin/CourseCard";
-import { courses as mockCourses } from "@/lib/data";
+import { courses as initialCourses } from "@/lib/data";
 
 export const Route = createFileRoute("/courses/")({
   head: () => ({
@@ -25,10 +25,13 @@ export const Route = createFileRoute("/courses/")({
 });
 
 function CoursesPage() {
-  const [courses, setCourses] = useState(mockCourses);
+  const [courses, setCourses] = useState(initialCourses);
 
   return (
-    <AdminLayout title="Курсы" subtitle="4 программы обучения венгерскому языку">
+    <AdminLayout
+      title="Курсы"
+      subtitle={`${courses.length} программы обучения венгерскому языку`}
+    >
       <div className="mb-4 flex justify-end">
         <motion.button
           whileTap={{ scale: 0.97 }}

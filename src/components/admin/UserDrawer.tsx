@@ -41,7 +41,7 @@ function Row({
         <Icon className="h-3.5 w-3.5" />
         {label}
       </span>
-      <span className="truncate text-sm font-medium">{value}</span>
+      <span className="truncate text-sm font-medium">{value || "—"}</span>
     </div>
   );
 }
@@ -156,7 +156,7 @@ export function UserDrawer({
                       setPending({
                         title: a.label,
                         description: a.destructive
-                          ? `Действие «${a.label.toLowerCase()}» будет применено к пользователю ${user.name}. Это демонстрационный режим.`
+                          ? `Действие «${a.label.toLowerCase()}» будет применено к пользователю ${user.name}.`
                           : `Применить «${a.label.toLowerCase()}» к пользователю ${user.name}?`,
                         destructive: a.destructive,
                         confirmLabel: a.label,

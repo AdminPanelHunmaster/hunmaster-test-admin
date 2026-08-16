@@ -13,6 +13,8 @@ import {
   Clock3,
   BookOpen,
   TrendingUp,
+  Activity,
+  LineChart as LineChartIcon,
 } from "lucide-react";
 import {
   Area,
@@ -29,7 +31,14 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { StatCard } from "@/components/admin/StatCard";
 import { ChartCard, SegmentedControl } from "@/components/admin/ChartCard";
 import { GlassCard } from "@/components/admin/GlassCard";
-import { activeStudentsSeries, activityFeed, newUsersSeries } from "@/lib/data";
+import { EmptyState } from "@/components/admin/EmptyState";
+import {
+  activeStudentsSeries,
+  activityFeed,
+  courses,
+  newUsersSeries,
+  users,
+} from "@/lib/data";
 import { chartTooltipStyle } from "@/lib/chart-theme";
 
 export const Route = createFileRoute("/")({
@@ -61,19 +70,21 @@ const feedIcons = {
 
 function Dashboard() {
   const [range, setRange] = useState<"7" | "30" | "90">("7");
+  const count = (s: string) => users.filter((u) => u.status === s).length;
+  const newUsersData = newUsersSeries[range];
 
   return (
     <AdminLayout
       title="Добро пожаловать в HunMaster Admin"
-      subtitle="Обзор платформы на 08.08.2026"
+      subtitle="Обзор платформы"
     >
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <StatCard index={0} label="Всего пользователей" value={128} icon={Users} />
-        <StatCard index={1} label="Активный доступ" value={73} icon={ShieldCheck} tone="jade" />
-        <StatCard index={2} label="Ожидают активации" value={14} icon={Hourglass} tone="ember" />
-        <StatCard index={3} label="Истёк доступ" value={21} icon={CalendarX} tone="muted" />
-        <StatCard index={4} label="Заблокировано" value={3} icon={Ban} tone="danger" />
-        <StatCard index={5} label="Курсов" value={4} icon={GraduationCap} />
+        <StatCard index={0} label="Всего пользователей" value={users.length} icon={Users} />
+        <StatCard index={1} label="Активный доступ" value={count("active")} icon={ShieldCheck} tone="jade" />
+        <StatCard index={2} label="Ожидают активации" value={count("pending")} icon={Hourglass} tone="ember" />
+        <StatCard index={3} label="Истёк доступ" value={count("expired")} icon={CalendarX} tone="muted" />
+        <StatCard index={4} label="Заблокировано" value={count("blocked")} icon={Ban} tone="danger" />
+        <StatCard index={5} label="Курсов" value={courses.length} icon={GraduationCap} />
       </div>
 
       <div className="mt-5 grid gap-4 xl:grid-cols-3">
@@ -94,9 +105,17 @@ function Dashboard() {
             />
           }
         >
+          {newUsersData.length === 0 ? (
+            <EmptyState
+              icon={LineChartIcon}
+              title="Недостаточно данных для аналитики"
+              description="График построится автоматически после первых регистраций."
+              className="h-64"
+            />
+          ) : (
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={newUsersSeries[range]} margin={{ left: -18, right: 6, top: 6 }}>
+              <AreaChart data={newUsersData} margin={{ left: -18, right: 6, top: 6 }}>
                 <defs>
                   <linearGradient id="emberFill" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="var(--ember)" stopOpacity={0.55} />
@@ -129,9 +148,18 @@ function Dashboard() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
+          )}
         </ChartCard>
 
         <ChartCard title="Активные ученики" description="По месяцам, 2026" delay={0.18}>
+          {activeStudentsSeries.length === 0 ? (
+            <EmptyState
+              icon={LineChartIcon}
+              title="Недостаточно данных для аналитики"
+              description="Данные появятся после активности учеников."
+              className="h-64"
+            />
+          ) : (
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={activeStudentsSeries} margin={{ left: -18, right: 6, top: 6 }}>
@@ -160,6 +188,7 @@ function Dashboard() {
               </LineChart>
             </ResponsiveContainer>
           </div>
+          )}
         </ChartCard>
       </div>
 
@@ -171,6 +200,14 @@ function Dashboard() {
         className="mt-5 p-5"
       >
         <h3 className="font-display text-base font-semibold">Последние действия</h3>
+        {activityFeed.length === 0 ? (
+          <EmptyState
+            className="mt-4"
+            icon={Activity}
+            title="Пока нет активности"
+            description="События появятся здесь после действий реальных пользователей."
+          />
+        ) : (
         <div className="mt-4 grid gap-2">
           {activityFeed.map((item, i) => {
             const Icon = feedIcons[item.kind as keyof typeof feedIcons] ?? UserPlus;
@@ -191,6 +228,7 @@ function Dashboard() {
             );
           })}
         </div>
+        )}
       </GlassCard>
     </AdminLayout>
   );

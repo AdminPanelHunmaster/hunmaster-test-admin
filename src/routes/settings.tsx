@@ -87,7 +87,7 @@ function SettingsPage() {
   const [tab, setTab] = useState("general");
 
   return (
-    <AdminLayout title="Настройки" subtitle="Конфигурация платформы — интерфейсные заглушки">
+    <AdminLayout title="Настройки" subtitle="Конфигурация платформы">
       <div className="grid gap-4 xl:grid-cols-[240px_1fr]">
         <GlassCard interactive={false} className="h-fit p-2">
           <div className="flex gap-1 overflow-x-auto xl:flex-col xl:overflow-visible">
@@ -125,15 +125,15 @@ function SettingsPage() {
             {tab === "general" && (
               <>
                 <Field label="Название проекта" value="HunMaster" />
-                <Field label="Telegram" value="https://t.me/HunMaster" />
+                <Field label="Telegram" placeholder="Пока не указан" />
                 <Field label="Facebook" placeholder="Пока не указан" />
-                <Field label="Email поддержки" value="support@hunmaster.hu" />
+                <Field label="Email поддержки" placeholder="Пока не указан" />
               </>
             )}
             {tab === "course" && (
               <>
-                <Field label="Курс по умолчанию" value="Hungarian A1" />
-                <Field label="Стандартный срок доступа" value="90 дней" />
+                <Field label="Курс по умолчанию" placeholder="Не выбран" />
+                <Field label="Стандартный срок доступа" placeholder="Не задан" />
                 <Toggle label="Автопубликация уроков" hint="Новые уроки сразу видны ученикам" />
                 <Toggle label="Последовательное прохождение" hint="Следующий урок после завершения предыдущего" on />
               </>

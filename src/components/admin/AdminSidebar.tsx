@@ -122,11 +122,11 @@ export function AdminSidebar({
       <div className="rounded-2xl border border-border bg-foreground/[0.04] p-2.5">
         <div className="flex items-center gap-3">
           <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border bg-foreground/10 text-xs font-bold">
-            ЛК
+            —
           </div>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">Ласло Керш</p>
+              <p className="truncate text-sm font-semibold">Нет данных</p>
               <p className="truncate text-[11px] text-muted-foreground">Администратор</p>
             </div>
           )}
