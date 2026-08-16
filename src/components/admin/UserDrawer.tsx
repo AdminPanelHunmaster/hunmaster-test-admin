@@ -156,7 +156,7 @@ export function UserDrawer({
                       setPending({
                         title: a.label,
                         description: a.destructive
-                          ? `Действие «${a.label.toLowerCase()}» будет применено к пользователю ${user.name}. Это демонстрационный режим.`
+                          ? `Действие «${a.label.toLowerCase()}» будет применено к пользователю ${user.name}.`
                           : `Применить «${a.label.toLowerCase()}» к пользователю ${user.name}?`,
                         destructive: a.destructive,
                         confirmLabel: a.label,
