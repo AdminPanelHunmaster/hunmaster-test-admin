@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { UserPlus, AlertTriangle, CheckCircle2, KeyRound, CheckCheck } from "lucide-react";
+import { UserPlus, AlertTriangle, CheckCircle2, KeyRound, CheckCheck, BellOff } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { GlassCard } from "@/components/admin/GlassCard";
-import { notifications as mockNotifications } from "@/lib/data";
+import { EmptyState } from "@/components/admin/EmptyState";
+import { notifications as initialNotifications } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/notifications")({
@@ -40,11 +41,15 @@ const tones = {
 };
 
 function NotificationsPage() {
-  const [items, setItems] = useState(mockNotifications);
+  const [items, setItems] = useState(initialNotifications);
   const unread = items.filter((i) => !i.read).length;
 
   return (
-    <AdminLayout title="Уведомления" subtitle={`${unread} непрочитанных события`}>
+    <AdminLayout
+      title="Уведомления"
+      subtitle={items.length === 0 ? "Уведомлений пока нет" : `${unread} непрочитанных события`}
+    >
+      {items.length > 0 && (
       <div className="mb-4 flex justify-end">
         <button
           onClick={() => setItems((p) => p.map((i) => ({ ...i, read: true })))}
@@ -54,6 +59,15 @@ function NotificationsPage() {
           Отметить все прочитанными
         </button>
       </div>
+      )}
+
+      {items.length === 0 && (
+        <EmptyState
+          icon={BellOff}
+          title="Уведомлений пока нет"
+          description="Заявки, сроки доступа и события учеников появятся здесь автоматически."
+        />
+      )}
 
       <div className="grid gap-2.5">
         {items.map((n, i) => {
