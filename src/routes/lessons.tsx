@@ -81,25 +81,16 @@ function Field({
 }
 
 function LessonEditor() {
-  const [blocks, setBlocks] = useState<{ uid: number; id: string; label: string }[]>([
-    { uid: 1, id: "heading", label: "Заголовок" },
-    { uid: 2, id: "text", label: "Текст" },
-    { uid: 3, id: "word", label: "Карточка слова" },
-  ]);
-  const [uid, setUid] = useState(4);
+  const [blocks, setBlocks] = useState<{ uid: number; id: string; label: string }[]>([]);
+  const [uid, setUid] = useState(1);
 
   return (
-    <AdminLayout title="Редактор урока" subtitle="Урок 1 — Приветствие · Hungarian A1">
+    <AdminLayout title="Редактор урока" subtitle="Новый урок — заполните поля и добавьте блоки">
       <div className="grid gap-4 xl:grid-cols-[1.5fr_1fr]">
         <div className="grid gap-4">
           <GlassCard interactive={false} className="grid gap-4 p-5">
-            <Field label="Название урока" placeholder="Например: Приветствие" defaultValue="Урок 1 — Приветствие" />
-            <Field
-              label="Описание"
-              placeholder="Краткое описание урока"
-              textarea
-              defaultValue="Учимся здороваться и прощаться по-венгерски в формальной и неформальной обстановке."
-            />
+            <Field label="Название урока" placeholder="Например: Приветствие" />
+            <Field label="Описание" placeholder="Краткое описание урока" textarea />
             <Field
               label="Теоретический материал"
               placeholder="Основная теория урока"
