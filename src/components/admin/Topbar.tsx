@@ -32,7 +32,6 @@ export function Topbar({
         </div>
         <button className="relative grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-border bg-foreground/[0.04] text-muted-foreground transition-colors hover:border-ember/40 hover:text-foreground">
           <Bell className="h-4 w-4" />
-          <span className="absolute top-2 right-2.5 h-1.5 w-1.5 rounded-full bg-ember" />
         </button>
       </div>
     </motion.header>
