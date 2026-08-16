@@ -1,13 +1,7 @@
 import { Search, Bell, Command } from "lucide-react";
 import { motion } from "motion/react";
 
-export function Topbar({
-  title,
-  subtitle,
-}: {
-  title: string;
-  subtitle?: string | undefined;
-}) {
+export function Topbar({ title, subtitle }: { title: string; subtitle?: string | undefined }) {
   return (
     <motion.header
       initial={{ opacity: 0, y: -10 }}
@@ -17,9 +11,7 @@ export function Topbar({
     >
       <div className="min-w-0">
         <h1 className="font-display truncate text-xl font-semibold sm:text-2xl">{title}</h1>
-        {subtitle && (
-          <p className="mt-1 truncate text-sm text-muted-foreground">{subtitle}</p>
-        )}
+        {subtitle && <p className="mt-1 truncate text-sm text-muted-foreground">{subtitle}</p>}
       </div>
       <div className="flex items-center gap-2">
         <div className="relative flex-1 md:w-64 md:flex-none">

@@ -83,8 +83,9 @@ Dashboard
 Sidebar можно сворачивать до режима только с иконками.
 
 ==================================================
+
 1. DASHBOARD
-==================================================
+   \==================================================
 
 Главная страница админки.
 
@@ -142,8 +143,7 @@ Sidebar можно сворачивать до режима только с ик
 
 Добавлен новый урок
 
-==================================================
-2. ПОЛЬЗОВАТЕЛИ
+================================================== 2. ПОЛЬЗОВАТЕЛИ
 ==================================================
 
 Создай красивую полноценную таблицу пользователей.
@@ -182,8 +182,7 @@ BLOCKED — красный
 
 При нажатии на пользователя открывается красивая боковая панель / modal.
 
-==================================================
-3. ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ
+================================================== 3. ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ
 ==================================================
 
 Покажи:
@@ -244,8 +243,7 @@ ACTIVE
 
 Для опасных действий используй confirmation modal.
 
-==================================================
-4. ДОСТУПЫ
+================================================== 4. ДОСТУПЫ
 ==================================================
 
 Отдельная страница управления подписками / доступом.
@@ -280,8 +278,7 @@ ACTIVE
 
 Отключить
 
-==================================================
-5. КУРСЫ
+================================================== 5. КУРСЫ
 ==================================================
 
 Создай красивую страницу управления курсами.
@@ -317,8 +314,7 @@ Hungarian B1
 
 Пока всё работает на mock data.
 
-==================================================
-6. РЕДАКТОР КУРСА
+================================================== 6. РЕДАКТОР КУРСА
 ==================================================
 
 Сделай страницу:
@@ -351,8 +347,7 @@ Hungarian A1
 
 Удалить
 
-==================================================
-7. РЕДАКТОР УРОКА
+================================================== 7. РЕДАКТОР УРОКА
 ==================================================
 
 Сделай mock editor.
@@ -395,8 +390,7 @@ Multiple Choice
 
 Это пока только UI prototype.
 
-==================================================
-8. АНАЛИТИКА
+================================================== 8. АНАЛИТИКА
 ==================================================
 
 Создай красивую страницу Analytics.
@@ -427,8 +421,7 @@ progress rings
 
 Все данные демонстрационные.
 
-==================================================
-9. УВЕДОМЛЕНИЯ
+================================================== 9. УВЕДОМЛЕНИЯ
 ==================================================
 
 Сделай Notification Center.
@@ -445,8 +438,7 @@ progress rings
 
 Уведомления можно помечать прочитанными.
 
-==================================================
-10. НАСТРОЙКИ
+================================================== 10. НАСТРОЙКИ
 ==================================================
 
 Добавь:
@@ -652,3 +644,20 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Backend setup
+
+HunMaster Admin now includes a Supabase/PostgreSQL backend foundation.
+
+1. Architecture: Supabase Auth, PostgreSQL, RLS, Storage, SQL migrations, and typed TypeScript services in `src/services`.
+2. Tables: `profiles`, `user_roles`, `courses`, `course_sections`, `lessons`, `lesson_blocks`, `enrollments`, `lesson_progress`, quizzes, assignments, `announcements`, `admin_audit_log`, and `platform_settings`.
+3. Supabase setup: create a Supabase project and apply `supabase/migrations/20260816103000_hunmaster_admin_backend.sql`.
+4. ENV: set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`; never expose `SUPABASE_SERVICE_ROLE_KEY` in frontend env.
+5. Migrations: run `supabase db push` after linking the project, or paste the SQL migration into Supabase SQL Editor.
+6. First owner: create an Auth user, then update `public.profiles.role` to `owner` for that email.
+7. Local run: install dependencies and run `npm run dev`.
+8. RLS: users only see their own private data; admin/owner access is enforced in PostgreSQL functions and policies.
+9. Admin: dashboard, users, access, courses, course structure, analytics, and settings read/write through Supabase services.
+10. Deploy: add Supabase env vars in Vercel, apply migrations, promote the owner, then deploy.
+
+More detail: [docs/BACKEND.md](docs/BACKEND.md).

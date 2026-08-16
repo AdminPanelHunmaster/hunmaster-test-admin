@@ -59,9 +59,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
-        {label}
-      </span>
+      <span className="text-[11px] tracking-[0.16em] text-muted-foreground uppercase">{label}</span>
       {textarea ? (
         <textarea
           rows={4}
@@ -91,11 +89,7 @@ function LessonEditor() {
           <GlassCard interactive={false} className="grid gap-4 p-5">
             <Field label="Название урока" placeholder="Например: Приветствие" />
             <Field label="Описание" placeholder="Краткое описание урока" textarea />
-            <Field
-              label="Теоретический материал"
-              placeholder="Основная теория урока"
-              textarea
-            />
+            <Field label="Теоретический материал" placeholder="Основная теория урока" textarea />
             <Field label="Новые слова" placeholder="szia, jó napot, viszlát..." textarea />
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Видео URL" placeholder="https://..." />

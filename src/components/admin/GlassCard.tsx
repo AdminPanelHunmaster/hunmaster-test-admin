@@ -7,12 +7,7 @@ type GlassCardProps = HTMLMotionProps<"div"> & {
   interactive?: boolean;
 };
 
-export function GlassCard({
-  children,
-  className,
-  interactive = true,
-  ...props
-}: GlassCardProps) {
+export function GlassCard({ children, className, interactive = true, ...props }: GlassCardProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   return (

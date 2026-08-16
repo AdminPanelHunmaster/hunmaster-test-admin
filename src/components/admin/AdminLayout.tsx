@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { motion } from "motion/react";
 import { AdminSidebar, MobileNav } from "./AdminSidebar";
 import { Topbar } from "./Topbar";
+import { AdminAccessGate } from "./AdminAccessGate";
 
 export function AdminLayout({
   title,
@@ -26,7 +27,7 @@ export function AdminLayout({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            {children}
+            <AdminAccessGate>{children}</AdminAccessGate>
           </motion.div>
         </main>
       </div>

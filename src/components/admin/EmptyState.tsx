@@ -27,9 +27,7 @@ export function EmptyState({
         <Icon className="h-5 w-5" />
       </span>
       <p className="font-display text-sm font-semibold">{title}</p>
-      {description && (
-        <p className="max-w-sm text-xs text-muted-foreground">{description}</p>
-      )}
+      {description && <p className="max-w-sm text-xs text-muted-foreground">{description}</p>}
     </motion.div>
   );
 }

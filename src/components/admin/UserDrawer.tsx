@@ -66,7 +66,12 @@ export function UserDrawer({
       status: "active" as UserStatus,
       destructive: false,
     },
-    { label: "Продлить доступ", icon: CalendarPlus, status: "active" as UserStatus, destructive: false },
+    {
+      label: "Продлить доступ",
+      icon: CalendarPlus,
+      status: "active" as UserStatus,
+      destructive: false,
+    },
     { label: "Изменить курс", icon: Repeat, destructive: false },
     {
       label: "Приостановить доступ",
@@ -134,9 +139,7 @@ export function UserDrawer({
                   <p className="text-xs tracking-[0.14em] text-muted-foreground uppercase">
                     Прогресс курса
                   </p>
-                  <p className="font-display text-xl font-semibold text-ember">
-                    {user.progress}%
-                  </p>
+                  <p className="font-display text-xl font-semibold text-ember">{user.progress}%</p>
                 </div>
                 <div className="mt-3 h-2 overflow-hidden rounded-full bg-foreground/10">
                   <motion.div
@@ -160,10 +163,8 @@ export function UserDrawer({
                           : `Применить «${a.label.toLowerCase()}» к пользователю ${user.name}?`,
                         destructive: a.destructive,
                         confirmLabel: a.label,
-                        ...(("remove" in a && a.remove) || !a.status
-                          ? {}
-                          : { status: a.status }),
-                        ...(("remove" in a && a.remove) ? { remove: true } : {}),
+                        ...(("remove" in a && a.remove) || !a.status ? {} : { status: a.status }),
+                        ...("remove" in a && a.remove ? { remove: true } : {}),
                       } as PendingAction)
                     }
                     className={

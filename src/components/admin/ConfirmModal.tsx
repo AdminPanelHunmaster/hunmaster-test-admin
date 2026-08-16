@@ -27,10 +27,7 @@ export function ConfirmModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <div
-            className="absolute inset-0 bg-background/70 backdrop-blur-sm"
-            onClick={onCancel}
-          />
+          <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onCancel} />
           <motion.div
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}

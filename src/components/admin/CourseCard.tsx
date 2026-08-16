@@ -79,11 +79,7 @@ export function CourseCard({
           onClick={() => onTogglePublish(course.id)}
           className="flex items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
-          {course.published ? (
-            <EyeOff className="h-3.5 w-3.5" />
-          ) : (
-            <Eye className="h-3.5 w-3.5" />
-          )}
+          {course.published ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
           {course.published ? "Скрыть" : "Опубликовать"}
         </motion.button>
       </div>

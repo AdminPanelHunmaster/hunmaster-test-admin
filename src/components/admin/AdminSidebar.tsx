@@ -14,6 +14,7 @@ import {
   PanelLeftOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -34,6 +35,14 @@ export function AdminSidebar({
   onToggle: () => void;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { profile, logout } = useAuth();
+  const displayName = profile?.full_name ?? profile?.email ?? "Нет данных";
+  const initials = displayName
+    .split(" ")
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   return (
     <motion.aside
@@ -63,8 +72,7 @@ export function AdminSidebar({
 
       <nav className="mt-4 flex flex-1 flex-col gap-1">
         {nav.map((item) => {
-          const active =
-            item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
+          const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
           return (
             <Link
               key={item.to}
@@ -72,9 +80,7 @@ export function AdminSidebar({
               title={collapsed ? item.label : undefined}
               className={cn(
                 "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
-                active
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
+                active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >
               {active && (
@@ -122,16 +128,19 @@ export function AdminSidebar({
       <div className="rounded-2xl border border-border bg-foreground/[0.04] p-2.5">
         <div className="flex items-center gap-3">
           <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border bg-foreground/10 text-xs font-bold">
-            —
+            {initials || "—"}
           </div>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">Нет данных</p>
-              <p className="truncate text-[11px] text-muted-foreground">Администратор</p>
+              <p className="truncate text-sm font-semibold">{displayName}</p>
+              <p className="truncate text-[11px] text-muted-foreground">
+                {profile?.role ?? "Администратор"}
+              </p>
             </div>
           )}
         </div>
         <button
+          onClick={() => void logout()}
           className={cn(
             "mt-2 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-xs text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive",
             collapsed && "justify-center",

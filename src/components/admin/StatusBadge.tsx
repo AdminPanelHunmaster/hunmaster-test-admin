@@ -10,13 +10,7 @@ const styles: Record<UserStatus, string> = {
   blocked: "text-destructive border-destructive/40 bg-destructive/10",
 };
 
-export function StatusBadge({
-  status,
-  className,
-}: {
-  status: UserStatus;
-  className?: string;
-}) {
+export function StatusBadge({ status, className }: { status: UserStatus; className?: string }) {
   return (
     <motion.span
       key={status}

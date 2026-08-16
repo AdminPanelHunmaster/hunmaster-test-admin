@@ -50,15 +50,15 @@ function NotificationsPage() {
       subtitle={items.length === 0 ? "Уведомлений пока нет" : `${unread} непрочитанных события`}
     >
       {items.length > 0 && (
-      <div className="mb-4 flex justify-end">
-        <button
-          onClick={() => setItems((p) => p.map((i) => ({ ...i, read: true })))}
-          className="flex items-center gap-2 rounded-xl border border-border px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:border-ember/40 hover:text-ember"
-        >
-          <CheckCheck className="h-4 w-4" />
-          Отметить все прочитанными
-        </button>
-      </div>
+        <div className="mb-4 flex justify-end">
+          <button
+            onClick={() => setItems((p) => p.map((i) => ({ ...i, read: true })))}
+            className="flex items-center gap-2 rounded-xl border border-border px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:border-ember/40 hover:text-ember"
+          >
+            <CheckCheck className="h-4 w-4" />
+            Отметить все прочитанными
+          </button>
+        </div>
       )}
 
       {items.length === 0 && (
