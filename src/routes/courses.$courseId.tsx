@@ -127,7 +127,7 @@ function CourseEditor() {
       <ConfirmModal
         open={!!toDelete}
         title="Удалить модуль"
-        description="Модуль и все его уроки будут удалены из структуры курса. Демонстрационный режим."
+        description="Модуль и все его уроки будут удалены из структуры курса."
         confirmLabel="Удалить"
         destructive
         onCancel={() => setToDelete(null)}
