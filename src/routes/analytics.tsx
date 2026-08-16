@@ -12,12 +12,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Users, Gauge, Timer, CheckCheck } from "lucide-react";
+import { Users, Gauge, Timer, CheckCheck, BarChart3, BookOpen } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { StatCard } from "@/components/admin/StatCard";
 import { ChartCard } from "@/components/admin/ChartCard";
 import { GlassCard } from "@/components/admin/GlassCard";
-import { popularLessons, retentionSeries, weekdayActivity } from "@/lib/data";
+import { EmptyState } from "@/components/admin/EmptyState";
+import { popularLessons, retentionSeries, users, weekdayActivity } from "@/lib/data";
 import { chartTooltipStyle } from "@/lib/chart-theme";
 
 export const Route = createFileRoute("/analytics")({
@@ -73,23 +74,26 @@ function ProgressRing({ value, label, sub }: { value: number; label: string; sub
 }
 
 function AnalyticsPage() {
+  const maxViews = popularLessons.reduce((m, l) => Math.max(m, l.views), 0);
   return (
-    <AdminLayout title="Аналитика" subtitle="Демонстрационные показатели обучения">
+    <AdminLayout title="Аналитика" subtitle="Показатели обучения по реальным данным">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard index={0} label="Количество учеников" value={128} icon={Users} />
-        <StatCard index={1} label="Средний прогресс" value={47} icon={Gauge} tone="ember" hint="%" />
-        <StatCard index={2} label="Среднее время обучения" value={38} icon={Timer} hint="мин / день" />
-        <StatCard
-          index={3}
-          label="Завершённые уроки"
-          value={1246}
-          icon={CheckCheck}
-          tone="jade"
-        />
+        <StatCard index={0} label="Количество учеников" value={users.length} icon={Users} />
+        <StatCard index={1} label="Средний прогресс" value={0} icon={Gauge} tone="ember" hint="%" />
+        <StatCard index={2} label="Среднее время обучения" value={0} icon={Timer} hint="мин / день" />
+        <StatCard index={3} label="Завершённые уроки" value={0} icon={CheckCheck} tone="jade" />
       </div>
 
       <div className="mt-5 grid gap-4 xl:grid-cols-3">
         <ChartCard title="Активность по дням" description="Средние сессии за неделю" delay={0.1} className="xl:col-span-2">
+          {weekdayActivity.length === 0 ? (
+            <EmptyState
+              icon={BarChart3}
+              title="Недостаточно данных для аналитики"
+              description="График появится, как только ученики начнут заниматься."
+              className="h-64"
+            />
+          ) : (
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={weekdayActivity} margin={{ left: -18, right: 6, top: 6 }}>
@@ -105,9 +109,18 @@ function AnalyticsPage() {
               </BarChart>
             </ResponsiveContainer>
           </div>
+          )}
         </ChartCard>
 
         <ChartCard title="Retention" description="Возврат учеников по неделям" delay={0.18}>
+          {retentionSeries.length === 0 ? (
+            <EmptyState
+              icon={BarChart3}
+              title="Недостаточно данных для аналитики"
+              description="Retention рассчитается после первых недель обучения."
+              className="h-64"
+            />
+          ) : (
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={retentionSeries} margin={{ left: -18, right: 6, top: 6 }}>
@@ -119,6 +132,7 @@ function AnalyticsPage() {
               </LineChart>
             </ResponsiveContainer>
           </div>
+          )}
         </ChartCard>
       </div>
 
@@ -126,14 +140,22 @@ function AnalyticsPage() {
         <GlassCard interactive={false} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.24 }} className="p-5">
           <h3 className="font-display text-base font-semibold">Ключевые метрики</h3>
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <ProgressRing value={47} label="Средний прогресс" sub="по всем курсам" />
-            <ProgressRing value={68} label="Завершаемость" sub="начатых модулей" />
-            <ProgressRing value={54} label="Retention 8 нед." sub="активные ученики" />
+            <ProgressRing value={0} label="Средний прогресс" sub="по всем курсам" />
+            <ProgressRing value={0} label="Завершаемость" sub="начатых модулей" />
+            <ProgressRing value={0} label="Retention 8 нед." sub="активные ученики" />
           </div>
         </GlassCard>
 
         <GlassCard interactive={false} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="p-5">
           <h3 className="font-display text-base font-semibold">Самые популярные уроки</h3>
+          {popularLessons.length === 0 ? (
+            <EmptyState
+              className="mt-4"
+              icon={BookOpen}
+              title="Недостаточно данных для аналитики"
+              description="Рейтинг уроков появится после первых просмотров."
+            />
+          ) : (
           <div className="mt-4 grid gap-3">
             {popularLessons.map((l, i) => (
               <div key={l.title}>
@@ -144,7 +166,7 @@ function AnalyticsPage() {
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-foreground/10">
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: `${(l.views / 412) * 100}%` }}
+                    animate={{ width: `${maxViews ? (l.views / maxViews) * 100 : 0}%` }}
                     transition={{ duration: 0.9, delay: 0.3 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                     className="h-full rounded-full bg-[var(--gradient-ember)]"
                   />
@@ -152,6 +174,7 @@ function AnalyticsPage() {
               </div>
             ))}
           </div>
+          )}
         </GlassCard>
       </div>
     </AdminLayout>
