@@ -41,7 +41,7 @@ function Row({
         <Icon className="h-3.5 w-3.5" />
         {label}
       </span>
-      <span className="truncate text-sm font-medium">{value}</span>
+      <span className="truncate text-sm font-medium">{value || "—"}</span>
     </div>
   );
 }
