@@ -11,6 +11,7 @@ import type {
 import { toAdminBackendError } from "./errors";
 import {
   type CourseWithCounts,
+  type EnrollmentWithCourse,
   type ProfileWithEnrollment,
   toAdminUser,
   toCourseCard,
@@ -189,19 +190,38 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
 }
 
 export async function listUsers(): Promise<AdminUser[]> {
-  const [profilesResult, progressResult] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("*, enrollments(*, courses(id,title))")
-      .order("created_at", { ascending: false }),
-    supabase.from("lesson_progress").select("user_id, progress"),
-  ]);
+  const profilesResult = await supabase
+    .from("profiles")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (profilesResult.error) {
     throw toAdminBackendError(profilesResult.error, "Не удалось загрузить пользователей.");
   }
+
+  const [enrollmentsResult, progressResult] = await Promise.all([
+    supabase.from("enrollments").select("*, courses(id,title)"),
+    supabase.from("lesson_progress").select("user_id, progress"),
+  ]);
+
+  if (enrollmentsResult.error) {
+    console.warn("[HunMaster Admin] User enrollment enrichment is unavailable.", {
+      code: enrollmentsResult.error.code,
+      message: enrollmentsResult.error.message,
+    });
+  }
   if (progressResult.error) {
-    throw toAdminBackendError(progressResult.error, "Не удалось загрузить прогресс пользователей.");
+    console.warn("[HunMaster Admin] User progress enrichment is unavailable.", {
+      code: progressResult.error.code,
+      message: progressResult.error.message,
+    });
+  }
+
+  const enrollmentsByUser = new Map<string, EnrollmentWithCourse[]>();
+  for (const enrollment of (enrollmentsResult.data ?? []) as EnrollmentWithCourse[]) {
+    const current = enrollmentsByUser.get(enrollment.user_id) ?? [];
+    current.push(enrollment);
+    enrollmentsByUser.set(enrollment.user_id, current);
   }
 
   const progressByUser = new Map<string, { total: number; count: number }>();
@@ -212,9 +232,13 @@ export async function listUsers(): Promise<AdminUser[]> {
     progressByUser.set(row.user_id, current);
   }
 
-  return ((profilesResult.data ?? []) as ProfileWithEnrollment[]).map((profile) => {
+  return (profilesResult.data ?? []).map((profile) => {
     const progress = progressByUser.get(profile.id);
-    return toAdminUser(profile, progress ? Math.round(progress.total / progress.count) : 0);
+    const enrichedProfile: ProfileWithEnrollment = {
+      ...profile,
+      enrollments: enrollmentsByUser.get(profile.id) ?? [],
+    };
+    return toAdminUser(enrichedProfile, progress ? Math.round(progress.total / progress.count) : 0);
   });
 }
 

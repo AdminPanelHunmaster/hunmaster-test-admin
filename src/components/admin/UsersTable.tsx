@@ -19,9 +19,13 @@ type SortKey = "name" | "registeredAt" | "accessUntil" | "status";
 
 export function UsersTable({
   users,
+  loading = false,
+  failed = false,
   onSelect,
 }: {
   users: AdminUser[];
+  loading?: boolean;
+  failed?: boolean;
   onSelect: (u: AdminUser) => void;
 }) {
   const [query, setQuery] = useState("");
@@ -179,11 +183,23 @@ export function UsersTable({
           <EmptyState
             className="mt-2"
             icon={UsersIcon}
-            title={users.length === 0 ? "Пользователей пока нет" : "Пользователи не найдены"}
+            title={
+              loading
+                ? "Загружаем пользователей…"
+                : failed
+                  ? "Не удалось загрузить пользователей"
+                  : users.length === 0
+                    ? "Пользователей пока нет"
+                    : "Пользователи не найдены"
+            }
             description={
-              users.length === 0
-                ? "Зарегистрированные пользователи появятся здесь автоматически."
-                : "Измените поисковый запрос или фильтр."
+              loading
+                ? "Получаем реальные профили из Supabase."
+                : failed
+                  ? "Подробности ошибки показаны выше. Повторите загрузку после проверки доступа."
+                  : users.length === 0
+                    ? "Зарегистрированные пользователи появятся здесь автоматически."
+                    : "Измените поисковый запрос или фильтр."
             }
           />
         )}

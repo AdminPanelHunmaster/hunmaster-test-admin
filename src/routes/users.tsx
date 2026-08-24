@@ -36,14 +36,27 @@ function UsersPage() {
   return (
     <AdminLayout
       title="Пользователи"
-      subtitle={users.length === 0 ? "Пользователей пока нет" : `${users.length} профилей в базе`}
+      subtitle={
+        usersQuery.isPending
+          ? "Загружаем профили…"
+          : usersQuery.error
+            ? "Не удалось загрузить профили"
+            : users.length === 0
+              ? "Пользователей пока нет"
+              : `${users.length} профилей в базе`
+      }
     >
       {(usersQuery.error || statusMutation.error) && (
         <div className="mb-4 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {(usersQuery.error ?? statusMutation.error)?.message}
         </div>
       )}
-      <UsersTable users={users} onSelect={(user) => setSelectedId(user.id)} />
+      <UsersTable
+        users={users}
+        loading={usersQuery.isPending}
+        failed={Boolean(usersQuery.error)}
+        onSelect={(user) => setSelectedId(user.id)}
+      />
       <UserDrawer
         user={selected}
         onClose={() => setSelectedId(null)}
