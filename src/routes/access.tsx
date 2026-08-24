@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { Check, Inbox, KeyRound, PowerOff, Repeat } from "lucide-react";
@@ -17,6 +17,9 @@ import type { AdminUser } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/access")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    user: typeof search["user"] === "string" ? search["user"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Доступы - HunMaster Admin" },
@@ -67,17 +70,32 @@ function inBucket(user: AdminUser, bucket: Bucket) {
 }
 
 function AccessPage() {
+  const search = Route.useSearch();
   const usersQuery = useAdminUsers();
   const coursesQuery = useAdminCourses();
   const grantAccess = useGrantAccessMutation();
   const revokeAccess = useRevokeAccessMutation();
-  const users = useMemo(() => usersQuery.data ?? [], [usersQuery.data]);
-  const courses = useMemo(() => coursesQuery.data ?? [], [coursesQuery.data]);
+  const users = useMemo(
+    () => (usersQuery.data ?? []).filter((user) => !["admin", "owner"].includes(user.role)),
+    [usersQuery.data],
+  );
+  const courses = useMemo(
+    () => (coursesQuery.data ?? []).filter((course) => course.published),
+    [coursesQuery.data],
+  );
   const [bucket, setBucket] = useState<Bucket>("pending");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [courseId, setCourseId] = useState<string>("");
   const [duration, setDuration] = useState<(typeof durations)[number]>(durations[1]);
   const [confirm, setConfirm] = useState<PendingAction | null>(null);
+
+  useEffect(() => {
+    if (search.user && users.some((user) => user.id === search.user)) {
+      setSelectedId(search.user);
+      const target = users.find((user) => user.id === search.user);
+      setBucket(target?.status === "active" ? "active" : "pending");
+    }
+  }, [search.user, users]);
 
   const list = useMemo(() => users.filter((user) => inBucket(user, bucket)), [users, bucket]);
   const selected = users.find((user) => user.id === selectedId) ?? null;
@@ -90,6 +108,28 @@ function AccessPage() {
       : confirm === "extend"
         ? "Продлить доступ"
         : "Активировать";
+  const mutationError = grantAccess.error ?? revokeAccess.error;
+
+  const handleConfirm = async () => {
+    try {
+      if (selected && confirm === "revoke") {
+        await revokeAccess.mutateAsync({ userId: selected.id });
+        setConfirm(null);
+        return;
+      }
+
+      if (selected && activeCourse && confirm) {
+        await grantAccess.mutateAsync({
+          userId: selected.id,
+          courseId: activeCourse.id,
+          days: duration.days,
+        });
+        setConfirm(null);
+      }
+    } catch {
+      // Mutation state renders the safe backend error and keeps the dialog open.
+    }
+  };
 
   return (
     <AdminLayout title="Доступы" subtitle="Управление подписками и сроками обучения">
@@ -248,9 +288,9 @@ function AccessPage() {
         </GlassCard>
       </div>
 
-      {(usersQuery.error || coursesQuery.error) && (
+      {(usersQuery.error || coursesQuery.error || mutationError) && (
         <div className="mt-4 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {(usersQuery.error ?? coursesQuery.error)?.message}
+          {(usersQuery.error ?? coursesQuery.error ?? mutationError)?.message}
         </div>
       )}
 
@@ -260,20 +300,9 @@ function AccessPage() {
         description={`${confirmLabel} для ${selected?.name ?? ""}: ${activeCourse?.title ?? "—"}, ${duration.label}.`}
         confirmLabel={confirmLabel}
         destructive={confirm === "revoke"}
+        busy={grantAccess.isPending || revokeAccess.isPending}
         onCancel={() => setConfirm(null)}
-        onConfirm={() => {
-          if (selected && confirm === "revoke") {
-            void revokeAccess.mutateAsync({ userId: selected.id });
-          }
-          if (selected && activeCourse && confirm !== "revoke") {
-            void grantAccess.mutateAsync({
-              userId: selected.id,
-              courseId: activeCourse.id,
-              days: duration.days,
-            });
-          }
-          setConfirm(null);
-        }}
+        onConfirm={() => void handleConfirm()}
       />
     </AdminLayout>
   );

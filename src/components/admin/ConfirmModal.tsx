@@ -7,6 +7,7 @@ export function ConfirmModal({
   description,
   confirmLabel = "Подтвердить",
   destructive = false,
+  busy = false,
   onConfirm,
   onCancel,
 }: {
@@ -15,6 +16,7 @@ export function ConfirmModal({
   description: string;
   confirmLabel?: string;
   destructive?: boolean;
+  busy?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }) {
@@ -53,19 +55,21 @@ export function ConfirmModal({
             <div className="mt-6 flex justify-end gap-2">
               <button
                 onClick={onCancel}
+                disabled={busy}
                 className="rounded-xl border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 Отмена
               </button>
               <button
-                onClick={onConfirm}
+                onClick={() => void onConfirm()}
+                disabled={busy}
                 className={
                   destructive
                     ? "rounded-xl border border-destructive/50 bg-destructive/20 px-4 py-2 text-sm font-semibold text-destructive transition-colors hover:bg-destructive/30"
                     : "rounded-xl border border-ember/40 bg-[var(--gradient-ember)] px-4 py-2 text-sm font-semibold text-primary-foreground"
                 }
               >
-                {confirmLabel}
+                {busy ? "Выполняется…" : confirmLabel}
               </button>
             </div>
           </motion.div>

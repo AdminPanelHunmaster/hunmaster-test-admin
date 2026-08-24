@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Loader2, LockKeyhole, ShieldAlert, SlidersHorizontal } from "lucide-react";
 import { motion } from "motion/react";
-import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { isSupabaseConfigured, supabaseConfigurationError } from "@/lib/supabase/client";
 import { requestPasswordReset, signIn } from "@/services/auth";
 import { getErrorMessage } from "@/services/errors";
 import { isAdminRole } from "@/services/permissions";
@@ -138,7 +138,10 @@ export function AdminAccessGate({ children }: { children: ReactNode }) {
       <AccessPanel
         icon={SlidersHorizontal}
         title="Supabase не настроен"
-        description="Добавьте VITE_SUPABASE_URL и VITE_SUPABASE_ANON_KEY в окружение Vercel или .env.local. После применения миграций админка начнёт читать реальные данные."
+        description={
+          supabaseConfigurationError ??
+          "Добавьте VITE_SUPABASE_URL и публичный Supabase key в окружение Vercel."
+        }
       />
     );
   }

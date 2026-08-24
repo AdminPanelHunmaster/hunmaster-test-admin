@@ -7,14 +7,25 @@ function normalizePublicEnv(value: unknown): string | undefined {
   return normalized.length > 0 ? normalized : undefined;
 }
 
-const supabaseUrl = normalizePublicEnv(import.meta.env["VITE_SUPABASE_URL"]);
-const supabaseAnonKey = normalizePublicEnv(import.meta.env["VITE_SUPABASE_ANON_KEY"]);
+const HUNMASTER_SUPABASE_URL = "https://lthzuqejupoanyblalmy.supabase.co";
+const supabaseUrl = normalizePublicEnv(import.meta.env["VITE_SUPABASE_URL"])?.replace(/\/+$/, "");
+const supabasePublicKey =
+  normalizePublicEnv(import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]) ??
+  normalizePublicEnv(import.meta.env["VITE_SUPABASE_ANON_KEY"]);
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+export const supabaseConfigurationError = !supabaseUrl
+  ? "Не задан VITE_SUPABASE_URL."
+  : supabaseUrl !== HUNMASTER_SUPABASE_URL
+    ? "Admin Panel подключён не к общему Supabase HunMaster."
+    : !supabasePublicKey
+      ? "Не задан VITE_SUPABASE_PUBLISHABLE_KEY или VITE_SUPABASE_ANON_KEY."
+      : null;
+
+export const isSupabaseConfigured = supabaseConfigurationError === null;
 
 export const supabase = createClient(
-  supabaseUrl ?? "https://missing.supabase.co",
-  supabaseAnonKey ?? "missing-anon-key",
+  isSupabaseConfigured ? supabaseUrl! : HUNMASTER_SUPABASE_URL,
+  supabasePublicKey ?? "missing-public-key",
   {
     auth: {
       persistSession: true,

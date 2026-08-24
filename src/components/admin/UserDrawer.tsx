@@ -12,7 +12,7 @@ import {
   Repeat,
   PauseCircle,
   Ban,
-  Trash2,
+  UserRound,
 } from "lucide-react";
 import type { AdminUser, UserStatus } from "@/lib/data";
 import { StatusBadge } from "./StatusBadge";
@@ -50,12 +50,12 @@ export function UserDrawer({
   user,
   onClose,
   onStatusChange,
-  onDelete,
+  onManageAccess,
 }: {
   user: AdminUser | null;
   onClose: () => void;
   onStatusChange: (id: string, status: UserStatus) => void;
-  onDelete: (id: string) => void;
+  onManageAccess: (id: string) => void;
 }) {
   const [pending, setPending] = useState<PendingAction>(null);
 
@@ -63,16 +63,16 @@ export function UserDrawer({
     {
       label: "Активировать доступ",
       icon: ShieldCheck,
-      status: "active" as UserStatus,
+      manage: true,
       destructive: false,
     },
     {
       label: "Продлить доступ",
       icon: CalendarPlus,
-      status: "active" as UserStatus,
+      manage: true,
       destructive: false,
     },
-    { label: "Изменить курс", icon: Repeat, destructive: false },
+    { label: "Изменить курс", icon: Repeat, manage: true, destructive: false },
     {
       label: "Приостановить доступ",
       icon: PauseCircle,
@@ -80,7 +80,6 @@ export function UserDrawer({
       destructive: true,
     },
     { label: "Заблокировать", icon: Ban, status: "blocked" as UserStatus, destructive: true },
-    { label: "Удалить пользователя", icon: Trash2, destructive: true, remove: true },
   ];
 
   return (
@@ -126,7 +125,10 @@ export function UserDrawer({
 
               <div className="mt-6 rounded-2xl border border-border bg-foreground/[0.03] px-4">
                 <Row icon={Mail} label="Email" value={user.email} />
+                <Row icon={UserRound} label="Логин" value={user.username} />
                 <Row icon={Send} label="Telegram" value={user.telegram} />
+                <Row icon={ShieldCheck} label="Роль" value={user.role} />
+                <Row icon={ShieldCheck} label="Статус аккаунта" value={user.accountStatus} />
                 <Row icon={CalendarDays} label="Регистрация" value={user.registeredAt} />
                 <Row icon={Clock} label="Последний вход" value={user.lastLogin} />
                 <Row icon={GraduationCap} label="Курс" value={user.course} />
@@ -155,7 +157,12 @@ export function UserDrawer({
                 {actions.map((a) => (
                   <button
                     key={a.label}
-                    onClick={() =>
+                    onClick={() => {
+                      if ("manage" in a && a.manage) {
+                        onManageAccess(user.id);
+                        onClose();
+                        return;
+                      }
                       setPending({
                         title: a.label,
                         description: a.destructive
@@ -163,10 +170,9 @@ export function UserDrawer({
                           : `Применить «${a.label.toLowerCase()}» к пользователю ${user.name}?`,
                         destructive: a.destructive,
                         confirmLabel: a.label,
-                        ...(("remove" in a && a.remove) || !a.status ? {} : { status: a.status }),
-                        ...("remove" in a && a.remove ? { remove: true } : {}),
-                      } as PendingAction)
-                    }
+                        ...(!("status" in a) || !a.status ? {} : { status: a.status }),
+                      } as PendingAction);
+                    }}
                     className={
                       a.destructive
                         ? "flex items-center gap-2.5 rounded-xl border border-border px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:border-destructive/40 hover:text-destructive"
@@ -192,10 +198,7 @@ export function UserDrawer({
         onCancel={() => setPending(null)}
         onConfirm={() => {
           if (user && pending) {
-            if (pending.title === "Удалить пользователя") {
-              onDelete(user.id);
-              onClose();
-            } else if (pending.status) {
+            if (pending.status) {
               onStatusChange(user.id, pending.status);
             }
           }

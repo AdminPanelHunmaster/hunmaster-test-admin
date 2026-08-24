@@ -281,6 +281,14 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      admin_grant_course_access: {
+        Args: { p_user_id: string; p_course_id: string; p_days: number | null };
+        Returns: Database["public"]["Tables"]["enrollments"]["Row"];
+      };
+      admin_end_user_access: {
+        Args: { p_user_id: string; p_status: "revoked" | "expired" };
+        Returns: number;
+      };
       is_admin: {
         Args: { user_id?: string };
         Returns: boolean;

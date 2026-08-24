@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { isAdminRole } from "@/services/permissions";
 import {
   getAnalyticsMetrics,
   getCourseStructure,
@@ -17,61 +19,78 @@ import {
 import type { AdminUser } from "@/lib/data";
 import type { Json } from "@/lib/supabase/database.types";
 
-const enabled = isSupabaseConfigured;
+function useAdminQueryScope() {
+  const { user, profile, loading } = useAuth();
+  const enabled =
+    isSupabaseConfigured &&
+    !loading &&
+    Boolean(user && profile?.is_active && isAdminRole(profile.role));
+
+  return { enabled, adminId: enabled ? user!.id : "signed-out" };
+}
 
 export function useDashboardMetrics() {
+  const scope = useAdminQueryScope();
   return useQuery({
-    queryKey: ["admin", "dashboard"],
+    queryKey: ["admin", scope.adminId, "dashboard"],
     queryFn: getDashboardMetrics,
-    enabled,
+    enabled: scope.enabled,
   });
 }
 
 export function useAdminUsers() {
+  const scope = useAdminQueryScope();
   return useQuery({
-    queryKey: ["admin", "users"],
+    queryKey: ["admin", scope.adminId, "users"],
     queryFn: listUsers,
-    enabled,
+    enabled: scope.enabled,
+    refetchOnWindowFocus: "always",
   });
 }
 
 export function useRawProfiles() {
+  const scope = useAdminQueryScope();
   return useQuery({
-    queryKey: ["admin", "profiles"],
+    queryKey: ["admin", scope.adminId, "profiles"],
     queryFn: listRawProfiles,
-    enabled,
+    enabled: scope.enabled,
   });
 }
 
 export function useAdminCourses() {
+  const scope = useAdminQueryScope();
   return useQuery({
-    queryKey: ["admin", "courses"],
+    queryKey: ["admin", scope.adminId, "courses"],
     queryFn: listCourses,
-    enabled,
+    enabled: scope.enabled,
+    refetchOnWindowFocus: "always",
   });
 }
 
 export function useCourseStructure(courseId: string) {
+  const scope = useAdminQueryScope();
   return useQuery({
-    queryKey: ["admin", "courses", courseId, "structure"],
+    queryKey: ["admin", scope.adminId, "courses", courseId, "structure"],
     queryFn: () => getCourseStructure(courseId),
-    enabled: enabled && Boolean(courseId),
+    enabled: scope.enabled && Boolean(courseId),
   });
 }
 
 export function useAnalyticsMetrics() {
+  const scope = useAdminQueryScope();
   return useQuery({
-    queryKey: ["admin", "analytics"],
+    queryKey: ["admin", scope.adminId, "analytics"],
     queryFn: getAnalyticsMetrics,
-    enabled,
+    enabled: scope.enabled,
   });
 }
 
 export function usePlatformSettings() {
+  const scope = useAdminQueryScope();
   return useQuery({
-    queryKey: ["admin", "settings"],
+    queryKey: ["admin", scope.adminId, "settings"],
     queryFn: getSettings,
-    enabled,
+    enabled: scope.enabled,
   });
 }
 

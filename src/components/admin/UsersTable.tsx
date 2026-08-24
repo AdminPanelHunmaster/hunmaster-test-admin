@@ -39,6 +39,7 @@ export function UsersTable({
         (u) =>
           !q ||
           u.name.toLowerCase().includes(q) ||
+          u.username.toLowerCase().includes(q) ||
           u.email.toLowerCase().includes(q) ||
           u.telegram.toLowerCase().includes(q),
       )
@@ -88,13 +89,15 @@ export function UsersTable({
       </div>
 
       <div className="mt-4 -mx-1 overflow-x-auto px-1">
-        <table className="w-full min-w-[900px] border-separate border-spacing-y-1.5 text-left">
+        <table className="w-full min-w-[1100px] border-separate border-spacing-y-1.5 text-left">
           <thead>
             <tr className="text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
               {(
                 [
                   ["Пользователь", "name"],
+                  ["Логин", null],
                   ["Email", null],
+                  ["Роль", null],
                   ["Telegram", null],
                   ["Курс", null],
                   ["Статус", "status"],
@@ -142,7 +145,13 @@ export function UsersTable({
                   </div>
                 </td>
                 <td className="border-y border-border/60 bg-foreground/[0.03] px-3 py-3 text-sm text-muted-foreground transition-colors group-hover:bg-ember/[0.07]">
+                  {u.username}
+                </td>
+                <td className="border-y border-border/60 bg-foreground/[0.03] px-3 py-3 text-sm text-muted-foreground transition-colors group-hover:bg-ember/[0.07]">
                   {u.email}
+                </td>
+                <td className="border-y border-border/60 bg-foreground/[0.03] px-3 py-3 text-sm text-muted-foreground transition-colors group-hover:bg-ember/[0.07]">
+                  {u.role}
                 </td>
                 <td className="border-y border-border/60 bg-foreground/[0.03] px-3 py-3 text-sm text-muted-foreground transition-colors group-hover:bg-ember/[0.07]">
                   {u.telegram}

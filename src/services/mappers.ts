@@ -23,6 +23,7 @@ export function formatDate(value: string | null | undefined): string {
 
 export function resolveUserStatus(profile: Profile, enrollment?: Enrollment | null): UserStatus {
   if (!profile.is_active || profile.account_status === "blocked") return "blocked";
+  if (profile.role === "admin" || profile.role === "owner") return "active";
   if (profile.account_status === "pending") return "pending";
   if (!enrollment) return "pending";
   if (enrollment.status === "revoked" || enrollment.status === "expired") return "expired";
@@ -31,21 +32,24 @@ export function resolveUserStatus(profile: Profile, enrollment?: Enrollment | nu
   return "active";
 }
 
-export function toAdminUser(profile: ProfileWithEnrollment): AdminUser {
+export function toAdminUser(profile: ProfileWithEnrollment, progress = 0): AdminUser {
   const enrollment =
     profile.enrollments.find((item) => item.status === "active") ?? profile.enrollments[0];
   return {
     id: profile.id,
     name: profile.full_name ?? profile.username ?? profile.email,
+    username: profile.username ?? "—",
     email: profile.email,
     telegram: profile.telegram ?? "",
+    role: profile.role,
+    accountStatus: profile.account_status,
     course: enrollment?.courses?.title ?? "—",
     status: resolveUserStatus(profile, enrollment),
     registeredAt: formatDate(profile.created_at),
     accessUntil: formatDate(enrollment?.expires_at) || null,
     accessFrom: formatDate(enrollment?.granted_at) || null,
     lastLogin: formatDate(profile.last_seen_at),
-    progress: 0,
+    progress,
   };
 }
 

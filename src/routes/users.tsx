@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { UserDrawer } from "@/components/admin/UserDrawer";
 import { UsersTable } from "@/components/admin/UsersTable";
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/users")({
 function UsersPage() {
   const usersQuery = useAdminUsers();
   const statusMutation = useUserStatusMutation();
+  const navigate = useNavigate();
   const users = usersQuery.data ?? [];
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = users.find((user) => user.id === selectedId) ?? null;
@@ -35,11 +36,11 @@ function UsersPage() {
   return (
     <AdminLayout
       title="Пользователи"
-      subtitle={users.length === 0 ? "Пользователей пока нет" : `${users.length} учеников в базе`}
+      subtitle={users.length === 0 ? "Пользователей пока нет" : `${users.length} профилей в базе`}
     >
-      {usersQuery.error && (
+      {(usersQuery.error || statusMutation.error) && (
         <div className="mb-4 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {usersQuery.error.message}
+          {(usersQuery.error ?? statusMutation.error)?.message}
         </div>
       )}
       <UsersTable users={users} onSelect={(user) => setSelectedId(user.id)} />
@@ -47,7 +48,9 @@ function UsersPage() {
         user={selected}
         onClose={() => setSelectedId(null)}
         onStatusChange={handleStatus}
-        onDelete={(id) => handleStatus(id, "blocked")}
+        onManageAccess={(id) => {
+          void navigate({ to: "/access", search: { user: id } });
+        }}
       />
     </AdminLayout>
   );

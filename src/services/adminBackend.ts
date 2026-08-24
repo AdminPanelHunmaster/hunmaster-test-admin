@@ -189,13 +189,33 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
 }
 
 export async function listUsers(): Promise<AdminUser[]> {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*, enrollments(*, courses(id,title))")
-    .order("created_at", { ascending: false });
+  const [profilesResult, progressResult] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("*, enrollments(*, courses(id,title))")
+      .order("created_at", { ascending: false }),
+    supabase.from("lesson_progress").select("user_id, progress"),
+  ]);
 
-  if (error) throw toAdminBackendError(error, "Не удалось загрузить пользователей.");
-  return ((data ?? []) as ProfileWithEnrollment[]).map(toAdminUser);
+  if (profilesResult.error) {
+    throw toAdminBackendError(profilesResult.error, "Не удалось загрузить пользователей.");
+  }
+  if (progressResult.error) {
+    throw toAdminBackendError(progressResult.error, "Не удалось загрузить прогресс пользователей.");
+  }
+
+  const progressByUser = new Map<string, { total: number; count: number }>();
+  for (const row of progressResult.data ?? []) {
+    const current = progressByUser.get(row.user_id) ?? { total: 0, count: 0 };
+    current.total += row.progress;
+    current.count += 1;
+    progressByUser.set(row.user_id, current);
+  }
+
+  return ((profilesResult.data ?? []) as ProfileWithEnrollment[]).map((profile) => {
+    const progress = progressByUser.get(profile.id);
+    return toAdminUser(profile, progress ? Math.round(progress.total / progress.count) : 0);
+  });
 }
 
 export async function listRawProfiles(): Promise<Profile[]> {
@@ -219,24 +239,16 @@ export async function updateUserAccessStatus(
   }
 
   if (status === "pending") {
-    await updateProfile(userId, { account_status: "pending", is_active: true });
-    await writeAuditLog("user.marked_pending", "profile", userId);
+    await endUserAccess(userId, "revoked");
     return;
   }
 
   if (status === "expired") {
-    const { error } = await supabase
-      .from("enrollments")
-      .update({ status: "expired" })
-      .eq("user_id", userId)
-      .eq("status", "active");
-    if (error) throw toAdminBackendError(error, "Не удалось отключить доступ.");
-    await writeAuditLog("enrollment.expired", "profile", userId);
+    await endUserAccess(userId, "expired");
     return;
   }
 
-  await updateProfile(userId, { account_status: "active", is_active: true });
-  await writeAuditLog("user.activated", "profile", userId);
+  throw new Error("Выберите курс и срок на странице «Доступы».");
 }
 
 async function updateProfile(
@@ -252,41 +264,27 @@ export async function grantCourseAccess(
   courseId: string,
   days: number | null,
 ): Promise<Enrollment> {
-  const { data: currentUser, error: userError } = await supabase.auth.getUser();
-  if (userError) throw toAdminBackendError(userError, "Не удалось определить администратора.");
-
-  const expiresAt = days === null ? null : new Date(Date.now() + days * 86_400_000).toISOString();
-  const { data, error } = await supabase
-    .from("enrollments")
-    .upsert(
-      {
-        user_id: userId,
-        course_id: courseId,
-        status: "active",
-        granted_by: currentUser.user?.id ?? null,
-        granted_at: new Date().toISOString(),
-        expires_at: expiresAt,
-      },
-      { onConflict: "user_id,course_id" },
-    )
-    .select("*")
-    .single();
+  const { data, error } = await supabase.rpc("admin_grant_course_access", {
+    p_user_id: userId,
+    p_course_id: courseId,
+    p_days: days,
+  });
 
   if (error) throw toAdminBackendError(error, "Не удалось назначить курс.");
-  await updateProfile(userId, { account_status: "active", is_active: true });
-  await writeAuditLog("enrollment.granted", "enrollment", data.id, { userId, courseId, expiresAt });
   return data;
 }
 
 export async function revokeUserAccess(userId: string): Promise<void> {
-  const { error } = await supabase
-    .from("enrollments")
-    .update({ status: "revoked" })
-    .eq("user_id", userId)
-    .eq("status", "active");
+  await endUserAccess(userId, "revoked");
+}
+
+async function endUserAccess(userId: string, status: "revoked" | "expired"): Promise<void> {
+  const { error } = await supabase.rpc("admin_end_user_access", {
+    p_user_id: userId,
+    p_status: status,
+  });
 
   if (error) throw toAdminBackendError(error, "Не удалось отозвать доступ.");
-  await writeAuditLog("enrollment.revoked", "profile", userId);
 }
 
 export async function listCourses(): Promise<Course[]> {
