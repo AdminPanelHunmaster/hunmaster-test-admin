@@ -281,6 +281,23 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      admin_save_lesson: {
+        Args: {
+          p_lesson: Json;
+          p_blocks: Json;
+          p_audit_action?: string | null;
+          p_audit_metadata?: Json;
+        };
+        Returns: Json;
+      };
+      admin_duplicate_lesson: {
+        Args: { p_lesson_id: string };
+        Returns: string;
+      };
+      admin_delete_lesson: {
+        Args: { p_lesson_id: string };
+        Returns: boolean;
+      };
       admin_grant_course_access: {
         Args: { p_user_id: string; p_course_id: string; p_days: number | null };
         Returns: Database["public"]["Tables"]["enrollments"]["Row"];

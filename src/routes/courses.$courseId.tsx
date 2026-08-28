@@ -61,6 +61,7 @@ function CourseEditor() {
           </button>
           <Link
             to="/lessons"
+            search={{ lesson: "new" }}
             className="flex items-center gap-2 rounded-xl border border-ember/40 bg-[var(--gradient-ember)] px-3.5 py-2 text-sm font-semibold text-primary-foreground"
           >
             <Plus className="h-4 w-4" />
@@ -135,6 +136,7 @@ function CourseEditor() {
                     <motion.span whileHover={{ scale: 1.1 }} className="shrink-0">
                       <Link
                         to="/lessons"
+                        search={{ lesson: lesson.id }}
                         className="grid h-8 w-8 place-items-center rounded-lg border border-border text-muted-foreground transition-colors hover:text-ember"
                       >
                         <Pencil className="h-3.5 w-3.5" />
