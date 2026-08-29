@@ -69,7 +69,7 @@ function LoginForm() {
     setMessage(null);
     try {
       await requestPasswordReset(email);
-      setMessage("Письмо для восстановления отправлено.");
+      setMessage("Если аккаунт существует, Supabase отправит письмо для восстановления.");
     } catch (resetError) {
       setError(getErrorMessage(resetError, "Не удалось отправить письмо."));
     } finally {

@@ -258,7 +258,6 @@ export async function updateUserAccessStatus(
 ): Promise<void> {
   if (status === "blocked") {
     await updateProfile(userId, { account_status: "blocked", is_active: false });
-    await writeAuditLog("user.blocked", "profile", userId);
     return;
   }
 

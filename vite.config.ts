@@ -7,6 +7,15 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  vite: {
+    define: {
+      __HUNMASTER_DEPLOYMENT__: JSON.stringify(
+        process.env["VERCEL_DEPLOYMENT_ID"] ?? process.env["VERCEL_URL"] ?? "local",
+      ),
+      __HUNMASTER_GIT_SHA__: JSON.stringify(process.env["VERCEL_GIT_COMMIT_SHA"] ?? "local"),
+      __HUNMASTER_ENVIRONMENT__: JSON.stringify(process.env["VERCEL_ENV"] ?? "development"),
+    },
+  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this

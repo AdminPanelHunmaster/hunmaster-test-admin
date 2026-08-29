@@ -281,6 +281,38 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      security_get_overview: {
+        Args: Record<string, never>;
+        Returns: Json;
+      };
+      security_get_my_sessions: {
+        Args: Record<string, never>;
+        Returns: Json;
+      };
+      security_set_emergency_mode: {
+        Args: {
+          p_enabled: boolean;
+          p_reason: string;
+          p_comment: string;
+          p_deployment?: string | null;
+        };
+        Returns: Json;
+      };
+      security_run_audit: {
+        Args: {
+          p_source_secret_findings?: number;
+          p_client_secret_env_findings?: number;
+        };
+        Returns: Json;
+      };
+      security_revoke_my_session: {
+        Args: { p_session_id: string };
+        Returns: number;
+      };
+      security_revoke_platform_sessions: {
+        Args: { p_scope: "all" | "except_current_owner" };
+        Returns: number;
+      };
       admin_save_lesson: {
         Args: {
           p_lesson: Json;

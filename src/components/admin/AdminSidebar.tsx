@@ -8,6 +8,7 @@ import {
   BookOpen,
   BarChart3,
   Bell,
+  ShieldCheck,
   Settings,
   LogOut,
   PanelLeftClose,
@@ -24,6 +25,7 @@ const nav = [
   { to: "/lessons", label: "Уроки", icon: BookOpen },
   { to: "/analytics", label: "Аналитика", icon: BarChart3 },
   { to: "/notifications", label: "Уведомления", icon: Bell },
+  { to: "/security", label: "Безопасность", icon: ShieldCheck },
   { to: "/settings", label: "Настройки", icon: Settings },
 ] as const;
 
